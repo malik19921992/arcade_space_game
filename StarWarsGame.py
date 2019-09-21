@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
-
+########################################################
+## Star Wars Arcade Game
+########################################################
+## code under GPL licence , you can copy change and use 
+########################################################
+## Author: malek esmail alfutaisy
+## Copyright: Copyright 2019, STAR_WARS_ARCADE
+## License: GPL
+## Version: 0.0.1
+## Email: mathjon@gmail.com
+## Status: active
+########################################################
 import tkinter
 import re
 import time
