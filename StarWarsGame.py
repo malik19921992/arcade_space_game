@@ -1,24 +1,5 @@
 #!/usr/bin/env python3
 
-'''
-use theory in file test19.py by mixing two methods . "the old and new"
-to do two loops inside each other
-/home/mal/Templates/learnpy/projects/array_test5.py
-test_image3.py
-comment out multi lines:
-    shift ctrl /
-# line 223:
- def MissileBang(self):
-        global img4
-        img4  = tkinter.PhotoImage(file = 'fire2.png')
-        self.can.itemconfig(self.z['item']["MISSILE"][0], image = img4)
-#to:
-    def MissileBang(self,NUM):
-        self.z['img'][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
-        self.can.itemconfig(self.z['item']["MISSILE"][0], image = self.z['img'][NUM])
-402
-'''
-
 import tkinter
 import re
 import time
