@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+  #!/usr/bin/env python3
+
 ########################################################
 ## Star Wars Arcade Game
 ########################################################
@@ -11,6 +12,26 @@
 ## Email: mathjon@gmail.com
 ## Status: active
 ########################################################
+
+'''
+use theory in file test19.py by mixing two methods . "the old and new"
+to do two loops inside each other
+/home/mal/Templates/learnpy/projects/array_test5.py
+test_image3.py
+comment out multi lines:
+    shift ctrl /
+# line 223:
+ def MissileBang(self):
+        global img4
+        img4  = tkinter.PhotoImage(file = 'fire2.png')
+        self.can.itemconfig(self.z['item']["MISSILE"][0], image = img4)
+#to:
+    def MissileBang(self,NUM):
+        self.z['img'][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
+        self.can.itemconfig(self.z['item']["MISSILE"][0], image = self.z['img'][NUM])
+402
+'''
+
 import tkinter
 import re
 import time
@@ -51,26 +72,34 @@ class main_class:
             self.MissileTouch(NUM)
 
     def BulletTouch(self):
-        for TYPE in ["MISSILE","ALIAN","LORDALIAN"]:
+        for TYPE in ["MISSILE","ALIAN","LORDALIAN","CRAFTALIAN"]:
                 if TYPE in self.z:
                     for NUM in self.z[TYPE]["ALIVE"].keys():
                         if self.z[TYPE]["ALIVE"][NUM] == 1:
-                            if self.z["pos"][TYPE][NUM]:
+                            #print(self.z["pos"][TYPE][NUM])
+                            #if self.z["pos"][TYPE][NUM]:
+                            if NUM in self.z["pos"][TYPE]:
                                 if self.z["pos"][TYPE][NUM]['y']-30 <= self.z["pos"]["BULIT"][0]['y'] <= (self.z["pos"][TYPE][NUM]['y']+25):
-                                    if self.z["pos"]["BULIT"][0]['x']-35 <= self.z["pos"][TYPE][NUM]['x'] <= (self.z["pos"]["BULIT"][0]['x']+35):                        
-                                        self.Drawparticle()
+                                    if self.z["pos"]["BULIT"][0]['x']-25 <= self.z["pos"][TYPE][NUM]['x'] <= (self.z["pos"]["BULIT"][0]['x']+25):
                                         self.z[TYPE]["MOVE"][NUM] = 0
                                         self.z[TYPE]["ALIVE"][NUM] = 0
                                         self.z["BulletMove"] = 0
                                         self.SURE = False
-                                        #self.Bang(0,"BULIT")
                                         self.Drawparticle('',0,0,0,"BULIT")
                                         self.Drawparticle('',0,0,NUM,"BOMB")
-                                        #self.Drawparticle('fire',x,y,NUM,TYPE)
                                         self.can.update()
-                                        print(NUM)
-
-                                        self.Bang(NUM,TYPE)
+                                        if TYPE != "MISSILE" and TYPE != "CRAFTALIAN":
+                                            self.Drawparticle('fire2.png',self.z["pos"][TYPE][NUM]['x'],self.z["pos"][TYPE][NUM]['y'],NUM,TYPE)
+                                            self.can.update()
+                                            self.Drawparticle('',self.z["pos"][TYPE][NUM]['x'],self.z["pos"][TYPE][NUM]['y'],NUM,TYPE)
+                                            self.UpdateAfter(15)
+                                        elif TYPE == "MISSILE" or TYPE == "CRAFTALIAN":
+                                            self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
+                                            self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
+                                            self.can.update()
+                                            self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = '')
+                                            self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
+                                            self.UpdateAfter(15)
                                         self.CountAlians()
                                         self.DefAlianScore(TYPE)
                                         self.can.itemconfigure(self.SCORE_NUM,text=str(self.txt5).zfill(5)) # update score
@@ -96,7 +125,9 @@ class main_class:
                             if self.z["pos"][TYPE][NUM]['y']+40 >= self.z["pos"]["MISSILE"][MISSILE_NUM]['y'] >= self.z["pos"][TYPE][NUM]['y']-40:
                                 if self.z["pos"][TYPE][NUM]['x']+40 >= self.z["pos"]["MISSILE"][MISSILE_NUM]['x'] >= self.z["pos"][TYPE][NUM]['x']-40:
                                     self.Drawparticle('fire2.png',self.z["pos"][TYPE][NUM]['x']+20,self.z["pos"][TYPE][NUM]['y']-20,NUM,TYPE) # draw spaceship
-                                    self.Bang(MISSILE_NUM,"MISSILE")
+                                    #self.Bang(MISSILE_NUM,"MISSILE")
+                                    self.z['img']["MISSILE"][MISSILE_NUM]  = tkinter.PhotoImage(file = '')
+                                    self.can.itemconfig(self.z['item']["MISSILE"][MISSILE_NUM], image = self.z['img']["MISSILE"][MISSILE_NUM])
                                     self.can.update()
                                     self.z["MISSILE"]["ALIVE"][MISSILE_NUM]  =     0
                                     self.z["LORDALIAN"]["ALIVE"][NUM]        =     0
@@ -118,7 +149,9 @@ class main_class:
                     if self.z["pos"]["SPACESHIP"][0]['y']+25 >= self.z["pos"]["MISSILE"][MISSILE_NUM]['y'] >= self.z["pos"]["SPACESHIP"][0]['y']-25:
                         if self.z["pos"]["SPACESHIP"][0]['x']+25 >= self.z["pos"]["MISSILE"][MISSILE_NUM]['x'] >= self.z["pos"]["SPACESHIP"][0]['x']-25:
                             self.Drawparticle('fire2.png',self.z["pos"]["SPACESHIP"][0]['x']+20,self.z["pos"]["SPACESHIP"][0]['y']-20,0,"SPACESHIP") # draw spaceship
-                            self.Bang(MISSILE_NUM,"MISSILE")
+                            #self.Bang(MISSILE_NUM,"MISSILE")
+                            self.z['img']["MISSILE"][MISSILE_NUM]  = tkinter.PhotoImage(file = '')
+                            self.can.itemconfig(self.z['item']["MISSILE"][MISSILE_NUM], image = self.z['img']["MISSILE"][MISSILE_NUM])
                             self.can.update()
                             self.z["MISSILE"]["ALIVE"][MISSILE_NUM] = 0
                             self.can.update()    
@@ -238,12 +271,12 @@ class main_class:
                 self.Drawparticle('alian102.png',self.X[NUM],self.Y[NUM],NUM,"ALIAN")# draw alian
 
     def Bang(self,NUM,TYPE):
-        self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
-        self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
-        self.can.update()
-        self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = '')
-        self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
-        self.UpdateAfter(15)
+            self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
+            self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
+            self.can.update()
+            self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = '')
+            self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
+            self.UpdateAfter(15)
 
     def AsignAlianGuide(self):
         if 'LIVETOPS' in self.z['ALIAN']:
@@ -326,26 +359,31 @@ class main_class:
     def Drawparticletwoflip(self,IMAGE,X,Y,NUM,TYPE):
         global image                                                                                                                                                                                                                                                        
         if "item" not in self.z:                                                                                                                               
-            self.z["item"] = {}                                                                                                                                
+            self.z["item"]             =   {}                                                                                                                                
         if "img" not  in self.z:                                                                                                                               
-            self.z["img"] = {}                                                                                                                                 
+            self.z["img"]              =   {}                                                                                                                                 
         if TYPE not in self.z["item"]:                                                                                                                         
-            self.z["item"][TYPE] = {}                                                                                                                          
+            self.z["item"][TYPE]       =   {}                                                                                                                          
         if TYPE not in self.z["img"]:                                                                                                                          
-            self.z["img"][TYPE]   = {}
+            self.z["img"][TYPE]        =   {}
         if TYPE not in self.z["pos"]:
-            self.z["pos"][TYPE] = {}
-            self.z["pos"][TYPE][NUM]  =  {'x':X ,'y':Y}
+            self.z["pos"][TYPE]        =   {}
+            self.z["pos"][TYPE][NUM]   =   {'x':X ,'y':Y}
         if 'image' not in self.z:
-            self.z["image"] = {}
+            self.z["image"]            =   {}
         if TYPE not in self.z["image"]:
-            self.z["image"][TYPE] = {}        
-        self.z["pos"][TYPE][NUM] = {}
-        self.z["pos"][TYPE][NUM]['x'] =  X 
-        self.z["pos"][TYPE][NUM]['y'] =  Y
+            self.z["image"][TYPE]      =   {}        
+        self.z["pos"][TYPE][NUM]       =   {}
+        self.z["pos"][TYPE][NUM]['x']  =   X 
+        self.z["pos"][TYPE][NUM]['y']  =   Y
         self.z['img'][TYPE][NUM]       =   Image.open(IMAGE)
         self.z['image'][TYPE][NUM]     =   ImageTk.PhotoImage(self.z['img'][TYPE][NUM])                                                                         
-        self.z['item'][TYPE][NUM]      =   self.can.create_image(X,Y,image=self.z['image'][TYPE][NUM])   
+        self.z['item'][TYPE][NUM]      =   self.can.create_image(X,Y,image=self.z['image'][TYPE][NUM])
+
+    def Deleteparticletwoflip(self,NUM,TYPE):
+        global img4
+        img4  = tkinter.PhotoImage(file = '')
+        self.can.after(5000,lambda:self.can.itemconfig(self.z['item'][TYPE][NUM], image = img4))
 
     def CheckSameAltitude(self):
         for NUM in self.Y:
@@ -443,7 +481,7 @@ class main_class:
     def shooting(self): #new shooting method:
         if self.SURE == True:
             if self.z["BulletMove"] == 0:
-                self.Drawparticle('blt1.png',self.g-30,self.t,0,"BULIT")
+                self.Drawparticle('blt1.png',self.g-50,self.t,0,"BULIT")
                 self.z["BulletMove"] = 1
             if self.z["BulletMove"] == 1: 
                 self.can.move(self.z['item']['BULIT'][0],0,-3)
@@ -452,7 +490,6 @@ class main_class:
                 self.IfTouchBang("bullet")
                 if -12 < int(self.z["pos"]["BULIT"][0]['y']) <  -8:
                     self.Drawparticle('',(self.z["pos"]["BULIT"][0]['x']),(self.z["pos"]["BULIT"][0]['y']),0,"BULIT")
-                    #self.Bang(0,"BULIT",'nobang')
                     self.SURE = False
                     self.z["BulletMove"] = 0
                     self.IfTouchBang("bullet")
@@ -509,14 +546,16 @@ class main_class:
                 self.bombing(RANGE,NUM)
             n += 1
 
-    def MoveLordOneStep(self,SPEED,RANGE=None,NUM=0):
+    def MoveLordOneStep(self,SPEED,RANGE,NUM):
         if "DIRECTION" not in self.z["LORDALIAN"]:
             self.z["LORDALIAN"]["DIRECTION"] = {}
         if self.z["LORDALIAN"]["ALIVE"][NUM] == 1:
-            if  540 <= self.z["pos"]["LORDALIAN"][NUM]['x'] <= 600:
+            if  540 < self.z["pos"]["LORDALIAN"][NUM]['x'] < 600:
                 self.z["LORDALIAN"]["DIRECTION"][NUM] = -1 * SPEED
-            if -550 <= self.z["pos"]["LORDALIAN"][NUM]['x'] <= -450 :
+            elif -540 < self.z["pos"]["LORDALIAN"][NUM]['x']  < 0  :
                 self.z["LORDALIAN"]["DIRECTION"][NUM] = 1 * SPEED
+            else:
+                pass
             self.shooting()
             if RANGE != None:
                 self.MissileLunch(1,RANGE,NUM)
@@ -546,23 +585,28 @@ class main_class:
                 self.Drawparticle('',0,0,0,'SPACESHIP')
                 self.Drawparticle('',0,0,0,'BULIT')
                 for NUM in self.z["pos"]["BOMB"].keys():
-                    self.Drawparticle('',0,0,0,'BOMB')
+                    self.Drawparticle('',0,0,NUM,'BOMB')
                 for NUM in self.z["pos"]["ALIAN"].keys():
                     self.Drawparticle('',0,0,NUM,'ALIAN')
                 if self.z["pos"]["LORDALIAN"]:
                     for NUM in self.z["pos"]["LORDALIAN"].keys():
                         self.Drawparticle('',0,0,NUM,'LORDALIAN')
+                if "MISSILE" in self.z["pos"]:
+                    for NUM in self.z["pos"]["MISSILE"].keys():
+                        self.z['img']["MISSILE"][NUM]  = tkinter.PhotoImage(file = '')
+                        self.can.itemconfig(self.z['item']["MISSILE"][NUM], image = self.z['img']["MISSILE"][NUM])
+                        self.can.update()
                 self.can.itemconfigure(self.LIVENUM,text=0) # update levels number
                 fen.after(50,lambda:self.can.create_text(242,250,fill="#ffffff",font="fixedsys 25 bold",text="GAME OVER"))
         else:
             pass
         
     def setter(self,X,Y,LEVNUM,LORD_X=None,LORD_Y=None,CRAFTALIAN=None):
-        b = 0
-        f = 0
-        n = 0
-        self.X = X
-        self.Y = Y
+        b        =   0
+        f        =   0
+        n        =   0
+        self.X   =   X
+        self.Y   =   Y
         self.can.itemconfigure(self.LEVEL_NUM,text=LEVNUM) # update levels number 
         self.lives        =    self.LIVESONGUI
         self.Alians       =    len(X)
@@ -581,8 +625,8 @@ class main_class:
         self.z["BulletMove"] = 0
         if "SPACESHIP" not in self.z["pos"]:
             self.z["pos"]["SPACESHIP"] = {}
-            self.z["pos"]["SPACESHIP"][0] = {'x':0,'y':0} 
-        self.Drawparticle('sp3.png',self.z["pos"]["SPACESHIP"][0]['x']+20,self.z["pos"]["SPACESHIP"][0]['y']-20,0,'SPACESHIP')
+            self.z["pos"]["SPACESHIP"][0] = {'x':250,'y':250} 
+        self.Drawparticle('sp3.png',self.z["pos"]["SPACESHIP"][0]['x'],self.z["pos"]["SPACESHIP"][0]['y'],0,'SPACESHIP')
         if len(X) != 0:
             for i in range(len(X)):
                 self.z["pos"]["ALIAN"][n] = {"x" : X[n] , "y" : Y[n]}
@@ -626,6 +670,7 @@ class main_class:
             for NUM in self.z['ALIAN']['ALTITUDE']['Y'][self.buttoms].keys():
                 if self.z['ALIAN']['ALIVE'][NUM] == 1:
                     self.z['ALIAN']['LIVEBUTS'][NUM] = 1
+
         if LORD_X != None:
             self.z["pos"]["LORDALIAN"]        =     {}
             self.z['ALIAN']["LORDALIAN"]      =     {}
@@ -659,9 +704,9 @@ class main_class:
                     self.Alians += 1
             else:
                 print('something went wrong  with LORDALIAN')
-        ######################################################
-        #define images  #
-        #+++++++++++++++#        
+        ###############|#######################################
+        #define images |                                      #
+        #++++++++++++++|++++++++++++++++++++++++++++++++++++++#        
         self.z["IMAGES"]                 =   {}
         self.z["IMAGES"]["BOMB"]         =   'bomb6.png'
         self.z["IMAGES"]["ALIAN"]        =   'alian102.png'
@@ -670,7 +715,6 @@ class main_class:
         self.z["IMAGES"]["LORDALIAN"]    =   'lordalian.png'
         self.z["IMAGES"]["FIRE"]         =   'fire2.png'
         self.z["IMAGES"]["NOTHING"]      =   ''
-
         if CRAFTALIAN == 'OK':
             self.z["CRAFTALIAN"]            =   {}
             self.z["CRAFTALIAN"]["ALIVE"]   =   {}
@@ -680,8 +724,6 @@ class main_class:
             for NUM in range(17):
                 self.z["CRAFTALIAN"]["ALIVE"][NUM] = 1
          
-    
-    
     def CraftAlianMove(self):
         NUM = 10
         for steps in range(35):
@@ -750,7 +792,6 @@ class main_class:
         self.AlianMoveOneStep(x+0.1,y+0.1,TRACKER_NUM,"CRAFTALIAN")
         self.AlianFlip(fd,TRACKER_NUM,TYPE)
         
-
     def AlianFlip(self,deg,NUM,TYPE):
         image = ImageTk.PhotoImage(self.z['img'][TYPE][NUM].rotate(deg))
         update = self.can.itemconfig(self.z['item'][TYPE][NUM] , image=image)
@@ -874,7 +915,7 @@ class main_class:
             while self.loop1 > 0:
                 self.RandGen(min=6,max=380)
                 for i in range(380):
-                    self.MoveLordOneStep(0.7,i)
+                    self.MoveLordOneStep(0.7,i,0)
                     self.MoveOneStepMultiAlians(i,-1,0)       
                     self.UpdateAfter()
                     self.UpdateAltitude()
@@ -882,7 +923,7 @@ class main_class:
                 if self.loop1 > 0:
                     self.RandGen(min=6,max=1500)
                     for i in range(50):
-                        self.MoveLordOneStep(0.7,i)
+                        self.MoveLordOneStep(0.7,i,0)
                         self.MoveOneStepMultiAlians(i,0,0.3)
                         self.UpdateAfter()
                         self.UpdateAltitude()
@@ -890,7 +931,7 @@ class main_class:
                 if self.loop1 > 0:
                     self.RandGen(min=6,max=1500)
                     for i in range(280):
-                        self.MoveLordOneStep(0.7,i)
+                        self.MoveLordOneStep(0.7,i,0)
                         self.MoveOneStepMultiAlians(i,1,0)
                         self.UpdateAfter()
                         self.UpdateAltitude()
@@ -899,7 +940,7 @@ class main_class:
                     self.RandGen(min=6,max=1500)
                     self.z["MISSILE"]["RAND"][0] = random.randint(1,1500)
                     for i in range(50):
-                        self.MoveLordOneStep(0.7,i)
+                        self.MoveLordOneStep(0.7,i,0)
                         self.MoveOneStepMultiAlians(i,0,0.3)
                         self.UpdateAfter()
                         self.UpdateAltitude()
@@ -907,8 +948,7 @@ class main_class:
         self.GameOver()
 
     def Level7(self):
-        self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],7,[600,-550],[45,20])
-
+        self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],7,[550,-45],[45,20])
         while self.lives > 0:
             self.RandGen(min=6,max=1500)
             for i in range(480):
@@ -931,6 +971,23 @@ class main_class:
         self.CraftAlianPositioning()
         self.CraftAlianMove()
        
+    def Level9(self):
+        self.setter([],[],8,[],[],CRAFTALIAN='OK')
+        self.z["CRAFTALIAN"]["ALIVE"][0]   =  1 
+        self.z["CRAFTALIAN"]["ALIVE"][1]   =  1 
+        self.z["pos"]["CRAFTALIAN"][0]     = {'x':150 , 'y':150}
+        self.z["pos"]["CRAFTALIAN"][1]     = {'x':250 , 'y':250}
+        print(self.z["pos"])
+        self.Drawparticletwoflip('alian105.png',150,150,0,"CRAFTALIAN")
+        self.Drawparticletwoflip('alian105.png',250,250,1,"CRAFTALIAN")
+        while True:
+            for i in range(480):
+                self.shooting()
+                self.UpdateAfter()
+
+        #self.Deleteparticletwoflip(0,"CRAFTALIAN")
+        #self.Deleteparticletwoflip(1,"CRAFTALIAN")
+
 
     def Levels(self): #new move alian:
         #self.Level1()
@@ -951,8 +1008,9 @@ class main_class:
         #         self.Level6()
         # if self.GAMEOVER == False:
         #     if self.NEXT_LEVEL == True:
-        self.Level7()
+        #self.Level7()
         #self.Level8()
+        self.Level9()
 
 if __name__ == '__main__':                    
     fen  = tkinter.Tk()
