@@ -1,5 +1,4 @@
- #!/usr/bin/env python3
-
+#!/usr/bin/env python3
 ########################################################
 ## Star Wars Arcade Game
 ########################################################
@@ -12,26 +11,6 @@
 ## Email: mathjon@gmail.com
 ## Status: active
 ########################################################
-
-'''
-use theory in file test19.py by mixing two methods . "the old and new"
-to do two loops inside each other
-/home/mal/Templates/learnpy/projects/array_test5.py
-test_image3.py
-comment out multi lines:
-    shift ctrl /
-# line 223:
- def MissileBang(self):
-        global img4
-        img4  = tkinter.PhotoImage(file = 'fire2.png')
-        self.can.itemconfig(self.z['item']["MISSILE"][0], image = img4)
-#to:
-    def MissileBang(self,NUM):
-        self.z['img'][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
-        self.can.itemconfig(self.z['item']["MISSILE"][0], image = self.z['img'][NUM])
-402
-'''
-
 import tkinter
 import re
 import time
@@ -240,7 +219,7 @@ class main_class:
 
     def CountAlians(self):
         Alians = 0
-        for TYPE in ["ALIAN","LORDALIAN"]:
+        for TYPE in ["ALIAN","LORDALIAN","CRAFTALIAN"]:
             if self.z[TYPE]["ALIVE"]:
                 for NUM in self.z[TYPE]["ALIVE"].keys():
                     if  self.z[TYPE]["ALIVE"][NUM] == 1:
@@ -722,14 +701,13 @@ class main_class:
             self.z["CRAFTALIAN"]["MOVE"] = {} 
             self.CRAFTALIAN_X               =   []
             self.CRAFTALIAN_Y               =   []
-            for NUM in range(17):
+            for NUM in range(16):
                 self.z["CRAFTALIAN"]["ALIVE"][NUM]   =   1
                 self.z["CRAFTALIAN"]["MOVE"][NUM]    =   1
-
-
+                self.Alians += 1
 
     def CraftAlianPositioning(self):
-        for NUM in range(17):
+        for NUM in range(16):
                 if NUM < 8:
                     x = 650
                     y = -100
@@ -741,7 +719,7 @@ class main_class:
                     x = -225
                     y = -100
                 self.Drawparticletwoflip('alian105.png',x,y,NUM,"CRAFTALIAN")
-        for NUM in range(17):
+        for NUM in range(16):
             if NUM < 8:
                 d = -0.5
                 f = -0.08
@@ -954,54 +932,77 @@ class main_class:
         self.GameOver()
 
     def CraftAlianMultiMoves(self):
-        print(f'rangeis: {self.mm} , steps: {self.STEPS}')
-        if self.STEPS < 30:
+        print(f'alians: {self.Alians} , loop: {self.loop} , rangeis: {self.mm} , steps: {self.STEPS} , craftalian: {self.CRAFTALIAN_NUM}')
+        if self.STEPS < 170:
             if self.loop == True:
+                if self.CRAFTALIAN_NUM == 8:
+                    self.CRAFTALIAN_NUM = 0
                 self.CraftAlianMove()
-        elif self.STEPS >= 30:
+        elif self.STEPS >= 170:
             if self.loop == True:
                 self.loop = False 
 
     def CraftAlianMove(self):
         self.STEPS += 1
         NUM = 10
-        for steps in range(1):
-            RANGE = NUM * 1
-            for NUM in range(8):
-                for i in range(RANGE):
-                    self.shooting()
-                    if self.z["CRAFTALIAN"]["ALIVE"][NUM] == 1:
-                        self.CRAFTALIAN_X[NUM] -= 0.08
-                        self.AlianMoveOneStep(self.CRAFTALIAN_X[NUM],self.CRAFTALIAN_Y[NUM],NUM,"CRAFTALIAN")
-                        dd = math.atan2(self.CRAFTALIAN_X[NUM],self.CRAFTALIAN_Y[NUM])/math.pi*180
-                        self.AlianFlip(dd,NUM,"CRAFTALIAN")
-                    self.shooting()
-                for i in range(RANGE):
-                    self.shooting()
-                    if self.z["CRAFTALIAN"]["ALIVE"][NUM+8] == 1:
-                        self.CRAFTALIAN_X[NUM+8] += 0.03
-                        self.AlianMoveOneStep(self.CRAFTALIAN_X[NUM+8],self.CRAFTALIAN_Y[NUM+8],NUM+8,"CRAFTALIAN")
-                        dd = math.atan2(self.CRAFTALIAN_X[NUM+8],self.CRAFTALIAN_Y[NUM+8])/math.pi*180
-                        self.AlianFlip(dd,NUM+8,"CRAFTALIAN")
-                    self.shooting()
-                self.UpdateAfter()
-                
+        RANGE = NUM * 1
+        #for NUM in range(8):
+        for i in range(RANGE):
+            self.shooting()
+            if self.z["CRAFTALIAN"]["ALIVE"][self.CRAFTALIAN_NUM] == 1:
+                self.CRAFTALIAN_X[self.CRAFTALIAN_NUM] -= 0.08
+                self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM],self.CRAFTALIAN_NUM,"CRAFTALIAN")
+                bb = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM])/math.pi*180
+                self.AlianFlip(bb,self.CRAFTALIAN_NUM,"CRAFTALIAN")
+        for i in range(RANGE):
+            self.shooting()
+            if self.z["CRAFTALIAN"]["ALIVE"][self.CRAFTALIAN_NUM+8] == 1:
+                self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8] += 0.03
+                self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
+                dd = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8])/math.pi*180
+                self.AlianFlip(dd,self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
+        self.CRAFTALIAN_NUM += 1
 
-    def Level8(self):  
-        self.setter([],[],8,[],[],CRAFTALIAN='OK')
-        self.CraftAlianPositioning()
-        self.STEPS = 0
-        self.loop = True
-        #self.CraftAlianMove()
-        while True:
+
+    def Level8(self):
+        self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],8,[550,-45],[45,20],CRAFTALIAN='OK')
+        print(self.z["CRAFTALIAN"]["ALIVE"].keys())
+        while self.lives > 0:
             self.CraftAlianPositioning()
             self.loop = True
             self.STEPS = 0
+            self.CRAFTALIAN_NUM = 0
+            self.RandGen(min=6,max=1500)
             for self.mm in range(480):
                 self.shooting()
                 self.CraftAlianMultiMoves()
+                self.MoveLordOneStep(0.7,self.mm,0)
+                self.MoveLordOneStep(0.7,self.mm,1)
+                self.MoveOneStepMultiAlians(self.mm,-1,0)
+                self.UpdateAfter(10)
+            self.RandGen(min=6,max=1500)
+            for self.mm in range(480):
                 self.shooting()
-                self.UpdateAfter()
+                self.CraftAlianMultiMoves()
+                self.MoveLordOneStep(0.7,self.mm,0)
+                self.MoveLordOneStep(0.7,self.mm,1)
+                self.MoveOneStepMultiAlians(self.mm,1,0)
+                self.UpdateAfter(10)
+        self.GameOver()
+
+        # self.CraftAlianPositioning()
+        # self.STEPS = 0
+        # self.loop = True
+        # #self.CraftAlianMove()
+        # while True:
+        #     self.CraftAlianPositioning()
+        #     self.loop = True
+        #     self.STEPS = 0
+        #     for self.mm in range(480):
+        #         self.shooting()
+        #         self.CraftAlianMultiMoves()
+        #         self.shooting()
+        #         self.UpdateAfter()
                 #self.can.update()
                 #time.sleep(1)
 
