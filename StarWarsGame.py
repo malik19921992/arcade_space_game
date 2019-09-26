@@ -8,9 +8,16 @@
 ## Copyright: Copyright 2019, STAR_WARS_ARCADE
 ## License: GPL
 ## Version: 0.0.1
-## Email: mathjon5555@gmail.com
+## Email: mathjon@gmail.com
 ## Status: active
 ########################################################
+'''
+[*] put if statment in each main function inside for loop for every level:
+def function():
+    if self.BREAK == 0:
+        do rest of function
+[*] put self.BREAK = 1 , after every self.lives == 0 inside self.iftouchbang() sub functions
+'''
 import tkinter
 import re
 import time
@@ -953,7 +960,6 @@ class main_class:
                 self.CRAFTALIAN_X[self.CRAFTALIAN_NUM] -= 0.08
                 self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM],self.CRAFTALIAN_NUM,"CRAFTALIAN")
                 bb = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM])/math.pi*180
-                #if CRAFTALIAN is ALIVE:
                 self.AlianFlip(bb,self.CRAFTALIAN_NUM,"CRAFTALIAN")
         for i in range(RANGE):
             self.shooting()
@@ -961,7 +967,6 @@ class main_class:
                 self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8] += 0.03
                 self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
                 dd = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8])/math.pi*180
-                #if CRAFTALIAN is ALIVE:
                 self.AlianFlip(dd,self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
         self.CRAFTALIAN_NUM += 1
 
@@ -971,7 +976,6 @@ class main_class:
                 self.z['image'][TYPE][NUM]  = ImageTk.PhotoImage(self.z['img'][TYPE][NUM].rotate(deg))
                 self.can.itemconfig(self.z['item'][TYPE][NUM] , image=self.z['image'][TYPE][NUM])
                 self.can.image = self.z['image'][TYPE][NUM]
-        #self.can.update()
 
     def Level8(self):
         self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],8,[550,-45],[45,20],CRAFTALIAN='OK')
@@ -999,24 +1003,6 @@ class main_class:
                 self.MoveOneStepMultiAlians(self.mm,1,0)
                 self.UpdateAfter(10)
         self.GameOver()
-
-        # self.CraftAlianPositioning()
-        # self.STEPS = 0
-        # self.loop = True
-        # #self.CraftAlianMove()
-        # while True:
-        #     self.CraftAlianPositioning()
-        #     self.loop = True
-        #     self.STEPS = 0
-        #     for self.mm in range(480):
-        #         self.shooting()
-        #         self.CraftAlianMultiMoves()
-        #         self.shooting()
-        #         self.UpdateAfter()
-                #self.can.update()
-                #time.sleep(1)
-
-
 
     def Level9(self):
         self.setter([],[],8,[],[],CRAFTALIAN='OK')
@@ -1068,6 +1054,5 @@ if __name__ == '__main__':
     c = main_class(fen)
     fen.mainloop()
     #fen.destroy()
-
 
 
