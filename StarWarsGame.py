@@ -8,7 +8,7 @@
 ## Copyright: Copyright 2019, STAR_WARS_ARCADE
 ## License: GPL
 ## Version: 0.0.1
-## Email: mathjon@gmail.com
+## Email: mathjon5555@gmail.com
 ## Status: active
 ########################################################
 import tkinter
@@ -55,8 +55,6 @@ class main_class:
                 if TYPE in self.z:
                     for NUM in self.z[TYPE]["ALIVE"].keys():
                         if self.z[TYPE]["ALIVE"][NUM] == 1:
-                            #print(self.z["pos"][TYPE][NUM])
-                            #if self.z["pos"][TYPE][NUM]:
                             if NUM in self.z["pos"][TYPE]:
                                 if self.z["pos"][TYPE][NUM]['y']-30 <= self.z["pos"]["BULIT"][0]['y'] <= (self.z["pos"][TYPE][NUM]['y']+25):
                                     if self.z["pos"]["BULIT"][0]['x']-25 <= self.z["pos"][TYPE][NUM]['x'] <= (self.z["pos"]["BULIT"][0]['x']+25):
@@ -171,7 +169,7 @@ class main_class:
                                     self.loop1 = 0
 
     def AlianShipTouch(self):
-        for TYPE in ["LORDALIAN","ALIAN"]:
+        for TYPE in ["LORDALIAN","ALIAN","CRAFTALIAN"]:
              if TYPE in self.z:
                 for NUM in self.z[TYPE]["ALIVE"].keys():
                     if self.z[TYPE]["ALIVE"][NUM] == 1:
@@ -180,14 +178,23 @@ class main_class:
                                 if (self.z["pos"][TYPE][NUM]['y']-47) <= self.z["pos"]["SPACESHIP"][0]['y'] <= (self.z["pos"][TYPE][NUM]['y']+47):
                                     if (self.z["pos"]["SPACESHIP"][0]['x']-47) <= self.z["pos"][TYPE][NUM]['x'] <= (self.z["pos"]["SPACESHIP"][0]['x']+47):
                                         self.Drawparticle('fire2.png',self.z["pos"]["SPACESHIP"][0]['x']+20,self.z["pos"]["SPACESHIP"][0]['y']-20,0,'SPACESHIP') #fireup spaceship
-                                        #self.Bang(NUM,TYPE)
-                                        self.Drawparticle('fire2.png',self.z["pos"][TYPE][NUM]['x'],self.z["pos"][TYPE][NUM]['y'],NUM,TYPE)# fireup alian
                                         self.can.update()
+                                        if TYPE != "CRAFTALIAN":
+                                            self.Drawparticle('fire2.png',self.z["pos"][TYPE][NUM]['x'],self.z["pos"][TYPE][NUM]['y'],NUM,TYPE)# fireup alian
+                                            self.can.update()
+                                            self.Drawparticle('',self.z["pos"][TYPE][NUM]['x'],self.z["pos"][TYPE][NUM]['y'],NUM,TYPE)
+                                            self.Drawparticle('',0,0,NUM,'BOMB')
+                                            self.UpdateAfter(15)
+                                        elif TYPE == "CRAFTALIAN":
+                                            self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = 'fire2.png')
+                                            self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
+                                            self.can.update()
+                                            self.z['img'][TYPE][NUM]  = tkinter.PhotoImage(file = '')
+                                            self.can.itemconfig(self.z['item'][TYPE][NUM], image = self.z['img'][TYPE][NUM])
+                                            self.UpdateAfter()
                                         self.DefAlianScore(TYPE)
                                         self.can.itemconfigure(self.SCORE_NUM,text=str(self.txt5).zfill(5)) # update score
-                                        self.Drawparticle('',0,0,NUM,'BOMB')
                                         self.Drawparticle('',0,0,0,'SPACESHIP')
-                                        self.Drawparticle('',self.z["pos"][TYPE][NUM]['x'],self.z["pos"][TYPE][NUM]['y'],NUM,TYPE)# fireup alian
                                         self.Drawparticle('sp3.png',self.z["pos"]["SPACESHIP"][0]['x']+20,self.z["pos"]["SPACESHIP"][0]['y']-20,0,'SPACESHIP') #delete spaceship
                                         self.MineAfter(0.3)
                                         self.Bang = 0
@@ -757,13 +764,6 @@ class main_class:
         self.AlianMoveOneStep(x+0.1,y+0.1,TRACKER_NUM,"CRAFTALIAN")
         self.AlianFlip(fd,TRACKER_NUM,TYPE)
         
-    def AlianFlip(self,deg,NUM,TYPE):
-        image = ImageTk.PhotoImage(self.z['img'][TYPE][NUM].rotate(deg))
-        update = self.can.itemconfig(self.z['item'][TYPE][NUM] , image=image)
-        if "ROTATE" not in self.z["CRAFTALIAN"]:
-            self.z[TYPE]["ROTATE"] = {}
-        self.z[TYPE]["ROTATE"][NUM] = {'image': image ,'update': update}
-        
     def Level1(self):
         self.setter([500],[200],1) # set main variables for level
         while self.lives > 0:
@@ -953,6 +953,7 @@ class main_class:
                 self.CRAFTALIAN_X[self.CRAFTALIAN_NUM] -= 0.08
                 self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM],self.CRAFTALIAN_NUM,"CRAFTALIAN")
                 bb = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM])/math.pi*180
+                #if CRAFTALIAN is ALIVE:
                 self.AlianFlip(bb,self.CRAFTALIAN_NUM,"CRAFTALIAN")
         for i in range(RANGE):
             self.shooting()
@@ -960,13 +961,22 @@ class main_class:
                 self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8] += 0.03
                 self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
                 dd = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8])/math.pi*180
+                #if CRAFTALIAN is ALIVE:
                 self.AlianFlip(dd,self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
         self.CRAFTALIAN_NUM += 1
 
+    def AlianFlip(self,deg,NUM,TYPE):
+        if self.z[TYPE]["ALIVE"][NUM] == 1:
+            if self.lives > 0:
+                self.z['image'][TYPE][NUM]  = ImageTk.PhotoImage(self.z['img'][TYPE][NUM].rotate(deg))
+                self.can.itemconfig(self.z['item'][TYPE][NUM] , image=self.z['image'][TYPE][NUM])
+                self.can.image = self.z['image'][TYPE][NUM]
+        #self.can.update()
 
     def Level8(self):
         self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],8,[550,-45],[45,20],CRAFTALIAN='OK')
         print(self.z["CRAFTALIAN"]["ALIVE"].keys())
+        self.BREAK = 0
         while self.lives > 0:
             self.CraftAlianPositioning()
             self.loop = True
@@ -1058,5 +1068,6 @@ if __name__ == '__main__':
     c = main_class(fen)
     fen.mainloop()
     #fen.destroy()
+
 
 
