@@ -11,13 +11,6 @@
 ## Email: mathjon@gmail.com
 ## Status: active
 ########################################################
-'''
-[*] put if statment in each main function inside for loop for every level:
-def function():
-    if self.BREAK == 0:
-        do rest of function
-[*] put self.BREAK = 1 , after every self.lives == 0 inside self.iftouchbang() sub functions
-'''
 import tkinter
 import re
 import time
@@ -32,12 +25,12 @@ class main_class:
 
     def __init__(self,master):
         #main variables:
-        self.DICT_VARS     =    {}                                                                                                                                        
-        self.z             =    self.DICT_VARS
-        self.SURE          =    False
-        self.score         =    0
-        self.LIVESONGUI    =    3
-        self.off           =    0
+        self.DICT_VARS        =    {}                                                                                                                                        
+        self.z                =    self.DICT_VARS
+        self.SURE             =    False
+        self.score            =    0
+        self.LIVESONGUI       =    3
+        self.off              =    0
         #functions:
         self.Shape()
         self.TraficText(3)
@@ -234,19 +227,17 @@ class main_class:
     def CountAlians(self):
         Alians = 0
         for TYPE in ["ALIAN","LORDALIAN","CRAFTALIAN"]:
-            if self.z[TYPE]["ALIVE"]:
-                for NUM in self.z[TYPE]["ALIVE"].keys():
-                    if  self.z[TYPE]["ALIVE"][NUM] == 1:
-                        Alians += 1
-                    else:
-                        pass
+            if TYPE in self.z:
+                if self.z[TYPE]["ALIVE"]:
+                    for NUM in self.z[TYPE]["ALIVE"].keys():
+                        if  self.z[TYPE]["ALIVE"][NUM] == 1:
+                            Alians += 1
+                        else:
+                            pass
         self.Alians = Alians
 
-    def MineAfter(self,int):
-        #stop every thing and wait int secounds
-        #self.can.after() ---> wait only this function but others are still works
-        #self.MineAfter() ---> stop all program and wait int  time then continue execution and update
-        time.sleep(int)
+    def MineAfter(self,NUM):
+        time.sleep(NUM)
         self.can.update()
 
     def SpaceStars(self):                                                                                                                                     
@@ -402,25 +393,12 @@ class main_class:
             self.z["TRIGGER"][NUM] = 1                                                                                                                                                                                                                   
         if self.z["TRIGGER"][NUM] == 1:                                                                                                                             
             self.can.move(self.z['item']['BOMB'][NUM],0,1)
-            #print(self.can.coords(self.z['item']['BOMB'][NUM]))
             self.z["pos"]["BOMB"][NUM]['x']  =  int((self.can.coords(self.z['item']['BOMB'][NUM]))[0])
             self.z["pos"]["BOMB"][NUM]['y']  =  int((self.can.coords(self.z['item']['BOMB'][NUM]))[1])                                                                                                                                                                                                             
         self.IfTouchBang("bomb",NUM=NUM)
 
     def MissileLunch(self,SPEED,RANGE,NUM):
-        #speeds:
-        if SPEED == 1:
-            speed = 0.001
-        elif SPEED == 2:
-            speed = 0.002
-        elif SPEED == 3:
-            speed = 0.003
-        elif SPEED == 4:
-            speed = 0.004
-        elif SPEED == 5:
-            speed = 0.005
-        else:
-            speed = 0.003
+        speed = SPEED * 0.001
         if self.z["MISSILE"]["RAND"][NUM] == RANGE:
             if self.z["MISSILE"]["ALIVE"][NUM] == 0:
                 self.z["MISSILE"]["ALIVE"][NUM]   = 1
@@ -437,10 +415,6 @@ class main_class:
                 self.IfTouchBang("MISSILE",NUM=NUM)
 
     def MissileDraw(self,IMAGE,X,Y,NUM,TYPE):
-        #if "image" not in self.z:
-        #    self.z["image"] = {}
-        #if TYPE not in self.z["image"]:
-        #    self.z["image"][TYPE] = {}
         if "item" not in self.z:                                                                                                                               
             self.z["item"] = {}                                                                                                                                
         if "img" not  in self.z:                                                                                                                               
@@ -470,8 +444,8 @@ class main_class:
         if "ROTATE" not in self.z["MISSILE"]:
             self.z["MISSILE"]["ROTATE"] = {}
         self.z["MISSILE"]["ROTATE"][NUM] = {'image': image ,'update': update}
-        
-    def shooting(self): #new shooting method:
+
+    def shooting(self):
         if self.SURE == True:
             if self.z["BulletMove"] == 0:
                 self.Drawparticle('blt1.png',self.g-50,self.t,0,"BULIT")
@@ -522,41 +496,43 @@ class main_class:
             #print(f'problem in self.IfTouchBang("alian_ship",TYPE,NUM), lives is :{self.lives}')
 
     def MoveOneStepMultiAlians(self,RANGE,X,Y):
-        n = 0
-        for NUM in self.z['ALIAN']['ALIVE'].keys():
-            if type(X) == list:
-                x = X[n]
-            elif type(X) != list:
-                x = X
-            if type(Y) == list:
-                y = Y[n]
-            elif type(Y) != list:
-                y = Y
-            self.shooting()
-            self.AlianMoveOneStep(x,y,NUM,"ALIAN")
+        if self.lives > 0:
+            n = 0
+            for NUM in self.z['ALIAN']['ALIVE'].keys():
+                if type(X) == list:
+                    x = X[n]
+                elif type(X) != list:
+                    x = X
+                if type(Y) == list:
+                    y = Y[n]
+                elif type(Y) != list:
+                    y = Y
+                self.shooting()
+                self.AlianMoveOneStep(x,y,NUM,"ALIAN")
 
-            if self.z["ALIAN"]["ALIVE"][NUM] == 1:
-                self.bombing(RANGE,NUM)
-            n += 1
-
+                if self.z["ALIAN"]["ALIVE"][NUM] == 1:
+                    self.bombing(RANGE,NUM)
+                n += 1
+ 
     def MoveLordOneStep(self,SPEED,RANGE,NUM):
-        if "DIRECTION" not in self.z["LORDALIAN"]:
-            self.z["LORDALIAN"]["DIRECTION"] = {}
-        if self.z["LORDALIAN"]["ALIVE"][NUM] == 1:
-            if  540 < self.z["pos"]["LORDALIAN"][NUM]['x'] < 600:
-                self.z["LORDALIAN"]["DIRECTION"][NUM] = -1 * SPEED
-            elif -540 < self.z["pos"]["LORDALIAN"][NUM]['x']  < 0  :
-                self.z["LORDALIAN"]["DIRECTION"][NUM] = 1 * SPEED
-            else:
-                pass
-            self.shooting()
+        if self.lives > 0:
+            if "DIRECTION" not in self.z["LORDALIAN"]:
+                self.z["LORDALIAN"]["DIRECTION"] = {}
+            if self.z["LORDALIAN"]["ALIVE"][NUM] == 1:
+                if  540 < self.z["pos"]["LORDALIAN"][NUM]['x'] < 600:
+                    self.z["LORDALIAN"]["DIRECTION"][NUM] = -1 * SPEED
+                elif -540 < self.z["pos"]["LORDALIAN"][NUM]['x']  < 0  :
+                    self.z["LORDALIAN"]["DIRECTION"][NUM] = 1 * SPEED
+                else:
+                    pass
+                self.shooting()
+                if RANGE != None:
+                    self.MissileLunch(5,RANGE,NUM)
+                self.AlianMoveOneStep(self.z["LORDALIAN"]["DIRECTION"][NUM],0,NUM,"LORDALIAN")
             if RANGE != None:
-                self.MissileLunch(1,RANGE,NUM)
-            self.AlianMoveOneStep(self.z["LORDALIAN"]["DIRECTION"][NUM],0,NUM,"LORDALIAN")
-        if RANGE != None:
-            if self.z["LORDALIAN"]["ALIVE"][NUM] != 1:
-                if self.z["MISSILE"]["ALIVE"][NUM] == 1:
-                    self.MissileLunch(1,RANGE,NUM)
+                if self.z["LORDALIAN"]["ALIVE"][NUM] != 1:
+                    if self.z["MISSILE"]["ALIVE"][NUM] == 1:
+                        self.MissileLunch(1,RANGE,NUM)
 
     def UpdateAfter(self,NUM=5):
         self.can.after(NUM)
@@ -577,6 +553,7 @@ class main_class:
             if self.NEXT_LEVEL == False:
                 self.Drawparticle('',0,0,0,'SPACESHIP')
                 self.Drawparticle('',0,0,0,'BULIT')
+                self.SURE = False
                 for NUM in self.z["pos"]["BOMB"].keys():
                     self.Drawparticle('',0,0,NUM,'BOMB')
                 for NUM in self.z["pos"]["ALIAN"].keys():
@@ -589,10 +566,15 @@ class main_class:
                         self.z['img']["MISSILE"][NUM]  = tkinter.PhotoImage(file = '')
                         self.can.itemconfig(self.z['item']["MISSILE"][NUM], image = self.z['img']["MISSILE"][NUM])
                         self.can.update()
-                self.can.itemconfigure(self.LIVENUM,text=0) # update levels number
-                fen.after(50,lambda:self.can.create_text(242,250,fill="#ffffff",font="fixedsys 25 bold",text="GAME OVER"))
-        else:
-            pass
+                if "CRAFTALIAN" in self.z["pos"]:
+                    for NUM in self.z["CRAFTALIAN"]["ALIVE"].keys():
+                        if self.z["CRAFTALIAN"]["ALIVE"][NUM]  ==  1:
+                            self.z['img']["CRAFTALIAN"][NUM]  = tkinter.PhotoImage(file = '')
+                            self.can.itemconfig(self.z['item']["CRAFTALIAN"][NUM], image = self.z['img']["CRAFTALIAN"][NUM])
+                    self.can.update()
+                self.can.itemconfigure(self.LIVENUM,text=0)
+                fen.after(30,lambda:self.can.create_text(242,250,fill="#ffffff",font="fixedsys 25 bold",text="GAME OVER"))
+                time.sleep(0.5)
         
     def setter(self,X,Y,LEVNUM,LORD_X=None,LORD_Y=None,CRAFTALIAN=None):
         b        =   0
@@ -708,6 +690,7 @@ class main_class:
         self.z["IMAGES"]["LORDALIAN"]    =   'lordalian.png'
         self.z["IMAGES"]["FIRE"]         =   'fire2.png'
         self.z["IMAGES"]["NOTHING"]      =   ''
+        self.z["IMAGES"]["CRAFTALIAN"]   =   'alian105.png'
         if CRAFTALIAN == 'OK':
             self.z["CRAFTALIAN"]            =   {}
             self.z["CRAFTALIAN"]["ALIVE"]   =   {}
@@ -752,7 +735,6 @@ class main_class:
                 RANGE = a * e  
             self.CRAFTALIAN_X.insert(NUM,d)
             self.CRAFTALIAN_Y.insert(NUM,(1 / (self.CRAFTALIAN_X[NUM] * self.CRAFTALIAN_X[NUM])))
-            #print(f'alian is :{NUM} e for range is: {e}')
             for i in range(RANGE):
                 self.CRAFTALIAN_X[NUM] += f
                 self.AlianMoveOneStep(self.CRAFTALIAN_X[NUM],self.CRAFTALIAN_Y[NUM],NUM,"CRAFTALIAN")
@@ -770,7 +752,50 @@ class main_class:
         y = float(re.sub(r'([0-9]+\.)0+([1-9]+)',r'\1\2',str(Y))) # increase speed when getting closer
         self.AlianMoveOneStep(x+0.1,y+0.1,TRACKER_NUM,"CRAFTALIAN")
         self.AlianFlip(fd,TRACKER_NUM,TYPE)
-        
+
+    def CraftAlianMultiMoves(self):
+        if self.lives > 0:
+            #print(f'alians: {self.Alians} , loop: {self.loop} , rangeis: {self.mm} , steps: {self.STEPS} , craftalian: {self.CRAFTALIAN_NUM}')
+            if self.STEPS < 170:
+                if self.loop == True:
+                    if self.CRAFTALIAN_NUM == 8:
+                        self.CRAFTALIAN_NUM = 0
+                    self.CraftAlianMove()
+            elif self.STEPS >= 170:
+                if self.loop == True:
+                    self.loop = False
+
+    def CraftAlianMove(self):
+        self.STEPS += 1
+        NUM = 10
+        RANGE = NUM * 1
+        #for NUM in range(8):
+        for i in range(RANGE):
+            self.shooting()
+            if self.z["CRAFTALIAN"]["ALIVE"][self.CRAFTALIAN_NUM] == 1:
+                self.CRAFTALIAN_X[self.CRAFTALIAN_NUM] -= 0.08
+                self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM],self.CRAFTALIAN_NUM,"CRAFTALIAN")
+                bb = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM])/math.pi*180
+                self.AlianFlip(bb,self.CRAFTALIAN_NUM,"CRAFTALIAN")
+        for i in range(RANGE):
+            self.shooting()
+            if self.z["CRAFTALIAN"]["ALIVE"][self.CRAFTALIAN_NUM+8] == 1:
+                self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8] += 0.03
+                self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
+                dd = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8])/math.pi*180
+                self.AlianFlip(dd,self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
+        self.CRAFTALIAN_NUM += 1
+
+    def AlianFlip(self,deg,NUM,TYPE):
+        if self.z[TYPE]["ALIVE"][NUM] == 1:
+            if self.lives > 0:
+                self.z['image'][TYPE][NUM]  = ImageTk.PhotoImage(self.z['img'][TYPE][NUM].rotate(deg))
+                self.can.itemconfig(self.z['item'][TYPE][NUM] , image=self.z['image'][TYPE][NUM])
+                self.can.image = self.z['image'][TYPE][NUM]
+
+    ########################################################################################################
+    #LEVELS:
+    #------+
     def Level1(self):
         self.setter([500],[200],1) # set main variables for level
         while self.lives > 0:
@@ -802,13 +827,18 @@ class main_class:
     def Level3(self):
         self.setter([500,450,400,350,300],[200,200,200,200,200],3) # set main variables for level
         while self.lives > 0:
-            self.RandGen(min=6,max=1500)
-            for i in range(270):
-                self.MoveOneStepMultiAlians(i,-1,0)
-                self.UpdateAfter()
             if self.lives > 0:
                 self.RandGen(min=6,max=1500)
                 for i in range(270):
+                    if self.lives <= 0:
+                        break
+                    self.MoveOneStepMultiAlians(i,-1,0)
+                    self.UpdateAfter()
+            if self.lives > 0:
+                self.RandGen(min=6,max=1500)
+                for i in range(270):
+                    if self.lives <= 0:
+                        break
                     self.MoveOneStepMultiAlians(i,1,0)
                     self.UpdateAfter()
         self.GameOver()
@@ -816,242 +846,276 @@ class main_class:
     def Level4(self):
         self.setter([500,450,400,350,350,400,450,500],[65,65,65,65,25,25,25,25],4) # set main variables for level
         while self.lives > 0:
-            #define new pos for alians  flip alians from fisrt of space:
             self.FlipAgainAlianPos()
             self.loop1 = 1
             while self.loop1 > 0:
-                self.RandGen(min=6,max=1500)
-                for i in range(330):
-                    self.MoveOneStepMultiAlians(i,-1,0.1)        
-                    self.UpdateAfter()
-                    self.UpdateAltitude()
-                    self.AsignAlianGuide()
-                    if int(self.z["pos"]["ALIAN"][self.guide]['y']) == 500:
-                        self.loop1 = 0
-                        break
-                if self.loop1 > 0:
+                if self.lives > 0:
                     self.RandGen(min=6,max=1500)
                     for i in range(330):
-                        self.MoveOneStepMultiAlians(i,1,0.1)
+                        if self.lives <= 0:
+                            break
+                        self.MoveOneStepMultiAlians(i,-1,0.1)        
                         self.UpdateAfter()
-                        self.UpdateAltitude()
                         self.UpdateAltitude()
                         self.AsignAlianGuide()
                         if int(self.z["pos"]["ALIAN"][self.guide]['y']) == 500:
                             self.loop1 = 0
                             break
+                if self.loop1 > 0:
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        for i in range(330):
+                            if self.lives <= 0:
+                                break
+                            self.MoveOneStepMultiAlians(i,1,0.1)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
+                            if int(self.z["pos"]["ALIAN"][self.guide]['y']) == 500:
+                                self.loop1 = 0
+                                break
         self.GameOver()
 
     def Level5(self):
-        self.setter([500,450,400,350,300,350,400,450,500,300,300,350,400,450,500],[130,130,130,130,130,90,90,90,90,90,165,165,165,165,165],5,600,45)
+        self.setter([500,450,400,350,300,350,400,450,500,300,300,350,400,450,500],[130,130,130,130,130,90,90,90,90,90,165,165,165,165,165],5,550,45)
         while self.lives > 0:
             self.loop1 = 1
             while self.loop1 > 0:
-                self.RandGen(min=6,max=1500)
-                for i in range(280):
-                    self.MoveLordOneStep(0.7)
-                    self.MoveOneStepMultiAlians(i,-1,0)        
-                    self.UpdateAfter()
-                    self.UpdateAltitude()
-                    self.AsignAlianGuide()
-                if self.loop1 > 0:
-                    self.RandGen(min=6,max=1500)
-                    for i in range(50):
-                        self.MoveLordOneStep(0.7)
-                        self.MoveOneStepMultiAlians(i,0,0.3)
-                        self.UpdateAfter()
-                        self.UpdateAltitude()
-                        self.AsignAlianGuide()
-                if self.loop1 > 0:
+                if self.lives > 0:
                     self.RandGen(min=6,max=1500)
                     for i in range(280):
-                        self.MoveLordOneStep(0.7)
-                        self.MoveOneStepMultiAlians(i,1,0)
+                        if self.lives <= 0:
+                                break
+                        self.MoveLordOneStep(0.7,None,0)
+                        self.MoveOneStepMultiAlians(i,-1,0)        
                         self.UpdateAfter()
                         self.UpdateAltitude()
                         self.AsignAlianGuide()
                 if self.loop1 > 0:
-                    self.RandGen(min=6,max=1500)
-                    for i in range(50):
-                        self.MoveLordOneStep(0.7)
-                        self.MoveOneStepMultiAlians(i,0,0.3)
-                        self.UpdateAfter()
-                        self.UpdateAltitude()
-                        self.AsignAlianGuide()
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        for i in range(50):
+                            if self.lives <= 0:
+                                break
+                            self.MoveLordOneStep(0.7,None,0)
+                            self.MoveOneStepMultiAlians(i,0,0.3)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
+                if self.loop1 > 0:
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        for i in range(280):
+                            if self.lives <= 0:
+                                break
+                            self.MoveLordOneStep(0.7,None,0)
+                            self.MoveOneStepMultiAlians(i,1,0)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
+                if self.loop1 > 0:
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        for i in range(50):
+                            if self.lives <= 0:
+                                break
+                            self.MoveLordOneStep(0.7,None,0)
+                            self.MoveOneStepMultiAlians(i,0,0.3)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
         self.GameOver()
 
     def Level6(self):
-        self.setter([500,450,400,350,300,350,400,450,500,300,300,350,400,450,500],[130,130,130,130,130,90,90,90,90,90,165,165,165,165,165],6,600,45)
+        self.setter([500,450,400,350,300,350,400,450,500,300,300,350,400,450,500],[130,130,130,130,130,90,90,90,90,90,165,165,165,165,165],6,550,45)
         while self.lives > 0:
             self.loop1 = 1
             while self.loop1 > 0:
-                self.RandGen(min=6,max=380)
-                for i in range(380):
-                    self.MoveLordOneStep(0.7,i,0)
-                    self.MoveOneStepMultiAlians(i,-1,0)       
-                    self.UpdateAfter()
-                    self.UpdateAltitude()
-                    self.AsignAlianGuide()
-                if self.loop1 > 0:
-                    self.RandGen(min=6,max=1500)
-                    for i in range(50):
+                if self.lives > 0:
+                    self.RandGen(min=6,max=380)
+                    for i in range(380):
+                        if self.lives <= 0:
+                                break
                         self.MoveLordOneStep(0.7,i,0)
-                        self.MoveOneStepMultiAlians(i,0,0.3)
+                        self.MoveOneStepMultiAlians(i,-1,0)       
                         self.UpdateAfter()
                         self.UpdateAltitude()
                         self.AsignAlianGuide()
                 if self.loop1 > 0:
-                    self.RandGen(min=6,max=1500)
-                    for i in range(280):
-                        self.MoveLordOneStep(0.7,i,0)
-                        self.MoveOneStepMultiAlians(i,1,0)
-                        self.UpdateAfter()
-                        self.UpdateAltitude()
-                        self.AsignAlianGuide()
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        for i in range(50):
+                            if self.lives <= 0:
+                                break
+                            self.MoveLordOneStep(0.7,i,0)
+                            self.MoveOneStepMultiAlians(i,0,0.3)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
                 if self.loop1 > 0:
-                    self.RandGen(min=6,max=1500)
-                    self.z["MISSILE"]["RAND"][0] = random.randint(1,1500)
-                    for i in range(50):
-                        self.MoveLordOneStep(0.7,i,0)
-                        self.MoveOneStepMultiAlians(i,0,0.3)
-                        self.UpdateAfter()
-                        self.UpdateAltitude()
-                        self.AsignAlianGuide()
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        for i in range(280):
+                            if self.lives <= 0:
+                                break
+                            self.MoveLordOneStep(0.7,i,0)
+                            self.MoveOneStepMultiAlians(i,1,0)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
+                if self.loop1 > 0:
+                    if self.lives > 0:
+                        self.RandGen(min=6,max=1500)
+                        self.z["MISSILE"]["RAND"][0] = random.randint(1,1500)
+                        for i in range(50):
+                            if self.lives <= 0:
+                                break
+                            self.MoveLordOneStep(0.7,i,0)
+                            self.MoveOneStepMultiAlians(i,0,0.3)
+                            self.UpdateAfter()
+                            self.UpdateAltitude()
+                            self.AsignAlianGuide()
         self.GameOver()
 
     def Level7(self):
         self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],7,[550,-45],[45,20])
         while self.lives > 0:
-            self.RandGen(min=6,max=1500)
-            for i in range(480):
-                self.shooting()
-                self.MoveLordOneStep(0.7,i,0)
-                self.MoveLordOneStep(0.7,i,1)
-                self.MoveOneStepMultiAlians(i,-1,0) 
-                self.UpdateAfter()
-            self.RandGen(min=6,max=1500)
-            for i in range(480):
-                self.shooting()
-                self.MoveLordOneStep(0.7,i,0)
-                self.MoveLordOneStep(0.7,i,1)
-                self.MoveOneStepMultiAlians(i,1,0) 
-                self.UpdateAfter()
-        self.GameOver()
-
-    def CraftAlianMultiMoves(self):
-        print(f'alians: {self.Alians} , loop: {self.loop} , rangeis: {self.mm} , steps: {self.STEPS} , craftalian: {self.CRAFTALIAN_NUM}')
-        if self.STEPS < 170:
-            if self.loop == True:
-                if self.CRAFTALIAN_NUM == 8:
-                    self.CRAFTALIAN_NUM = 0
-                self.CraftAlianMove()
-        elif self.STEPS >= 170:
-            if self.loop == True:
-                self.loop = False 
-
-    def CraftAlianMove(self):
-        self.STEPS += 1
-        NUM = 10
-        RANGE = NUM * 1
-        #for NUM in range(8):
-        for i in range(RANGE):
-            self.shooting()
-            if self.z["CRAFTALIAN"]["ALIVE"][self.CRAFTALIAN_NUM] == 1:
-                self.CRAFTALIAN_X[self.CRAFTALIAN_NUM] -= 0.08
-                self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM],self.CRAFTALIAN_NUM,"CRAFTALIAN")
-                bb = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM])/math.pi*180
-                self.AlianFlip(bb,self.CRAFTALIAN_NUM,"CRAFTALIAN")
-        for i in range(RANGE):
-            self.shooting()
-            if self.z["CRAFTALIAN"]["ALIVE"][self.CRAFTALIAN_NUM+8] == 1:
-                self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8] += 0.03
-                self.AlianMoveOneStep(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
-                dd = math.atan2(self.CRAFTALIAN_X[self.CRAFTALIAN_NUM+8],self.CRAFTALIAN_Y[self.CRAFTALIAN_NUM+8])/math.pi*180
-                self.AlianFlip(dd,self.CRAFTALIAN_NUM+8,"CRAFTALIAN")
-        self.CRAFTALIAN_NUM += 1
-
-    def AlianFlip(self,deg,NUM,TYPE):
-        if self.z[TYPE]["ALIVE"][NUM] == 1:
             if self.lives > 0:
-                self.z['image'][TYPE][NUM]  = ImageTk.PhotoImage(self.z['img'][TYPE][NUM].rotate(deg))
-                self.can.itemconfig(self.z['item'][TYPE][NUM] , image=self.z['image'][TYPE][NUM])
-                self.can.image = self.z['image'][TYPE][NUM]
+                self.RandGen(min=6,max=1500)
+                for i in range(480):
+                    if self.lives <= 0:
+                        break
+                    self.shooting()
+                    self.MoveLordOneStep(0.7,i,0)
+                    self.MoveLordOneStep(0.7,i,1)
+                    self.MoveOneStepMultiAlians(i,-1,0) 
+                    self.UpdateAfter()
+            if self.lives > 0:
+                self.RandGen(min=6,max=1500)
+                for i in range(480):
+                    if self.lives <= 0:
+                        break
+                    self.shooting()
+                    self.MoveLordOneStep(0.7,i,0)
+                    self.MoveLordOneStep(0.7,i,1)
+                    self.MoveOneStepMultiAlians(i,1,0) 
+                    self.UpdateAfter()
+        self.GameOver()
 
     def Level8(self):
         self.setter([500,450,400,350,350,400,450,500],[150,150,150,150,100,100,100,100],8,[550,-45],[45,20],CRAFTALIAN='OK')
-        print(self.z["CRAFTALIAN"]["ALIVE"].keys())
         self.BREAK = 0
         while self.lives > 0:
             self.CraftAlianPositioning()
             self.loop = True
             self.STEPS = 0
             self.CRAFTALIAN_NUM = 0
-            self.RandGen(min=6,max=1500)
-            for self.mm in range(480):
-                self.shooting()
-                self.CraftAlianMultiMoves()
-                self.MoveLordOneStep(0.7,self.mm,0)
-                self.MoveLordOneStep(0.7,self.mm,1)
-                self.MoveOneStepMultiAlians(self.mm,-1,0)
-                self.UpdateAfter(10)
-            self.RandGen(min=6,max=1500)
-            for self.mm in range(480):
-                self.shooting()
-                self.CraftAlianMultiMoves()
-                self.MoveLordOneStep(0.7,self.mm,0)
-                self.MoveLordOneStep(0.7,self.mm,1)
-                self.MoveOneStepMultiAlians(self.mm,1,0)
-                self.UpdateAfter(10)
+            if self.lives > 0:
+                self.RandGen(min=6,max=1500)
+                for self.mm in range(480):
+                    if self.lives <= 0:
+                        break
+                    self.shooting()
+                    self.CraftAlianMultiMoves()
+                    self.MoveLordOneStep(0.7,self.mm,0)
+                    self.MoveLordOneStep(0.7,self.mm,1)
+                    self.MoveOneStepMultiAlians(self.mm,-1,0)
+                    self.UpdateAfter()
+            if self.lives > 0:
+                self.RandGen(min=6,max=1500)
+                for self.mm in range(480):
+                    if self.lives <= 0:
+                        break
+                    self.shooting()
+                    self.CraftAlianMultiMoves()
+                    self.MoveLordOneStep(0.7,self.mm,0)
+                    self.MoveLordOneStep(0.7,self.mm,1)
+                    self.MoveOneStepMultiAlians(self.mm,1,0)
+                    self.UpdateAfter()
         self.GameOver()
 
     def Level9(self):
-        self.setter([],[],8,[],[],CRAFTALIAN='OK')
-        self.z["CRAFTALIAN"]["ALIVE"][0]   =  1 
-        self.z["CRAFTALIAN"]["ALIVE"][1]   =  1 
-        self.z["pos"]["CRAFTALIAN"][0]     = {'x':150 , 'y':150} 
-        self.z["pos"]["CRAFTALIAN"][1]     = {'x':250 , 'y':250}
-        self.z["CRAFTALIAN"]["MOVE"] = {}  
-        self.z["CRAFTALIAN"]["MOVE"][0] = 1
-        self.z["CRAFTALIAN"]["MOVE"][1] = 1
-        print(self.z["pos"])
-        #self.Drawparticletwoflip('alian105.png',150,150,0,"CRAFTALIAN")
-        #self.Drawparticletwoflip('alian105.png',250,250,1,"CRAFTALIAN")
-        while True:
-            for i in range(480):
-                self.shooting()
-                self.UpdateAfter()
 
-        #self.Deleteparticletwoflip(0,"CRAFTALIAN")
-        #self.Deleteparticletwoflip(1,"CRAFTALIAN")
-
+        print('you win')
+        
 
     def Levels(self): #new move alian:
-        #self.Level1()
-        #if self.GAMEOVER == False:
-        #     if self.NEXT_LEVEL == True:
-        #         self.Level2()
-        # if self.GAMEOVER == False:
-        #     if self.NEXT_LEVEL == True:
-        #         self.Level3()
-        # if self.GAMEOVER == False:
-        #     if self.NEXT_LEVEL == True:
-        #         self.Level4()
-        # if self.GAMEOVER == False:
-        #     if self.NEXT_LEVEL == True:
-        #         self.Level5()
-        # if self.GAMEOVER == False:
-        #     if self.NEXT_LEVEL == True:
-        #         self.Level6()
-        # if self.GAMEOVER == False:
-        #     if self.NEXT_LEVEL == True:
-        #self.Level7()
-        self.Level8()
-        #self.Level9()
+        FUNCS = [self.Level2,self.Level3,self.Level4,self.Level5,self.Level6,self.Level7,self.Level8,self.Level9]
+        self.Level1()
+        for FUNC in FUNCS:
+            if self.GAMEOVER == False:
+                if self.NEXT_LEVEL == True:
+                    FUNC()
+
+class GAME_THEME:
+    def __init__(self,master):
+        self.z = {}
+        self.Shape()
+        self.TraficText()
+        self.FirstFucntion()
+        self.z["pos"]                   =   {}
+        self.z["pos"]["SPACESHIP"]      =   {}
+        #self.z["pos"]["SPACESHIP"][0]   =   {'x': 0 ,'y': 0}
+
+    def Shape(self):
+        global can
+        self.can = tkinter.Canvas(fen,width=500,height=500,bg='black')
+        #self.SpaceStars()        
+        self.can.pack()
+        #self.can.config(cursor='none') # hide cursor
+
+    def motion(self,event):
+        a = event.x - self.z["pos"]["SPACESHIP"][0]['x']
+        b = event.y - self.z["pos"]["SPACESHIP"][0]['y']
+        self.can.move(self.z['item']['SPACESHIP'][0],a,b)
+        self.z["pos"]["SPACESHIP"][0]['x'] = event.x
+        self.z["pos"]["SPACESHIP"][0]['y'] = event.y
+        self.chine.configure(text='x={}  y={} '.format(self.z["pos"]["SPACESHIP"][0]['x'],self.z["pos"]["SPACESHIP"][0]['y']))
+
+    def TraficText(self):
+        self.txt1   =   "STAR"
+        self.txt2   =   "WARS"
+        self.txt3   =   "= 150 pts"
+        self.txt4   =   "= 250 pts"
+        self.txt5   =   "= 300 pts"
+        self.txt6   =   "= 350 pts"
+        self.txt7   =   "START"
+        self.txt8   =   "https://github.com/malik19921992"
+        self.txt9   =   "QUIT"
+        self.ARCADE = self.can.create_text(250,35,fill="#ffbf00",font="Future 55 bold",text=self.txt1)
+        self.SPACE = self.can.create_text(250,83,fill="#ff190a",font="Future 50 bold",text=self.txt2)
+        self.ALIANPRICE = self.can.create_text(235+40,165+75,fill="#ff190a",font="Future 18 bold",text=self.txt3)
+        self.MISSILEPRICE = self.can.create_text(235+40,220+75,fill="#ff190a",font="Future 18 bold",text=self.txt4)
+        self.LORDALIAN = self.can.create_text(235+40,275+75,fill="#ff190a",font="Future 18 bold",text=self.txt5)
+        self.CRAFTALIAN = self.can.create_text(235+40,325+75,fill="#ff190a",font="Future 18 bold",text=self.txt6)
+        self.STARTGAME = self.can.create_text(235+20,150,fill="#ffffff",font="Future 18 bold",text=self.txt7)
+        self.GITHUB = self.can.create_text(235+20,450,fill="#33ff33",font="Future 18 bold",text=self.txt8)
+        self.QUIT = self.can.create_text(235+20,190,fill="#ffffff",font="Future 18 bold",text=self.txt9)
+
+    def Drawparticle(self,IMAGE,X,Y,NUM,TYPE):                                                                                                                                                                                                                                                      
+        if "item" not in self.z:                                                                                                                               
+            self.z["item"] = {}                                                                                                                                
+        if "img" not  in self.z:                                                                                                                               
+            self.z["img"] = {}                                                                                                                                 
+        if TYPE not in self.z["item"]:                                                                                                                         
+            self.z["item"][TYPE] = {}                                                                                                                          
+        if TYPE not in self.z["img"]:                                                                                                                          
+            self.z["img"][TYPE]   = {}                                                                                       
+        self.z['img'][TYPE][NUM]      =   tkinter.PhotoImage(file=IMAGE)                                                                                            
+        self.z['item'][TYPE][NUM]     =   self.can.create_image(X,Y, anchor=tkinter.NE, image=self.z['img'][TYPE][NUM])
+    
+    def FirstFucntion(self):
+        self.Drawparticle('alian102.png',170+40,145+75,0,"TARGET")
+        self.Drawparticle('missile6.png',190+40,185+75,1,"TARGET")
+        self.Drawparticle('lordalian.png',180+40,255+75,2,"TARGET")
+        self.Drawparticle('alian105.png',175+40,295+75,3,"TARGET")
 
 if __name__ == '__main__':                    
     fen  = tkinter.Tk()
     fen.resizable(0,0) # fixed size widget
-    c = main_class(fen)
+    b = GAME_THEME(fen)
+    #c = main_class(fen)
     fen.mainloop()
     #fen.destroy()
 
