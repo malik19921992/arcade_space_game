@@ -8,9 +8,16 @@
 ## Copyright: Copyright 2019, STAR_WARS_ARCADE
 ## License: GPL
 ## Version: 0.0.1
-## Email: mathjon@gmail.com
+## Email: mathjohn5555@gmail.com
 ## Status: active
 ########################################################
+'''
+to change text color and start game by just click start
+test_hover.py
+  File "./test22.py", line 1131, in OnClickStart
+    self.can.itemconfigure(self.start,fill="#00ff00")
+AttributeError: 'GAME_THEME' object has no attribute 'start'
+'''
 import tkinter
 import re
 import time
@@ -25,6 +32,8 @@ class main_class:
 
     def __init__(self,master):
         #main variables:
+        #self.Shape = Shape()
+        self.can = can
         self.DICT_VARS        =    {}                                                                                                                                        
         self.z                =    self.DICT_VARS
         self.SURE             =    False
@@ -32,7 +41,8 @@ class main_class:
         self.LIVESONGUI       =    3
         self.off              =    0
         #functions:
-        self.Shape()
+        can.config(cursor='none') # hide cursor
+        #self.Shape()
         self.TraficText(3)
         self.lab()
         self.Button2Close()
@@ -240,14 +250,14 @@ class main_class:
         time.sleep(NUM)
         self.can.update()
 
-    def SpaceStars(self):                                                                                                                                     
-        colors = ["blue","red","green","white"]                                                                                                  
-        for i in range(200):                                                                                                                              
-            rand1 = random.randint(1,500)                                                                                                                 
-            rand2 = random.randint(1,500)                                                                                                                 
-            rand3 = random.uniform(0.3,1.6)                                                                                                               
-            rand4 = random.choice(colors)                                                                                                                 
-            self.can.create_oval(rand1-rand3,rand2-rand3,rand1+rand3,rand2+rand3,fill=rand4)
+    # def SpaceStars(self):                                                                                                                                     
+    #     colors = ["blue","red","green","white"]                                                                                                  
+    #     for i in range(200):                                                                                                                              
+    #         rand1 = random.randint(1,500)                                                                                                                 
+    #         rand2 = random.randint(1,500)                                                                                                                 
+    #         rand3 = random.uniform(0.3,1.6)                                                                                                               
+    #         rand4 = random.choice(colors)                                                                                                                 
+    #         self.can.create_oval(rand1-rand3,rand2-rand3,rand1+rand3,rand2+rand3,fill=rand4)
 
     def FlipAgainAlianPos(self):
         for NUM in self.z["pos"]["ALIAN"].keys():
@@ -297,12 +307,12 @@ class main_class:
         self.z["pos"]["SPACESHIP"][0]['y'] = event.y
         self.chine.configure(text='x={}  y={} '.format(self.z["pos"]["SPACESHIP"][0]['x'],self.z["pos"]["SPACESHIP"][0]['y']))
 
-    def Shape(self):
-        global can
-        self.can = tkinter.Canvas(fen,width=500,height=500,bg='black')
-        self.SpaceStars()        
-        self.can.pack()
-        self.can.config(cursor='none') # hide cursor
+    # def Shape(self):
+    #     global can
+    #     self.can = tkinter.Canvas(fen,width=500,height=500,bg='black')
+    #     self.SpaceStars()        
+    #     self.can.pack()
+    #     self.can.config(cursor='none') # hide cursor
 
     def Button2Close(self):
         self.bou1 = tkinter.Button(fen,text='close',command=fen.quit)
@@ -1050,20 +1060,17 @@ class main_class:
 
 class GAME_THEME:
     def __init__(self,master):
+        Shape()
+        self.can = can
         self.z = {}
-        self.Shape()
+        #self.Shape()
         self.TraficText()
         self.FirstFucntion()
         self.z["pos"]                   =   {}
         self.z["pos"]["SPACESHIP"]      =   {}
+        self.bindings()
         #self.z["pos"]["SPACESHIP"][0]   =   {'x': 0 ,'y': 0}
 
-    def Shape(self):
-        global can
-        self.can = tkinter.Canvas(fen,width=500,height=500,bg='black')
-        #self.SpaceStars()        
-        self.can.pack()
-        #self.can.config(cursor='none') # hide cursor
 
     def motion(self,event):
         a = event.x - self.z["pos"]["SPACESHIP"][0]['x']
@@ -1083,15 +1090,16 @@ class GAME_THEME:
         self.txt7   =   "START"
         self.txt8   =   "https://github.com/malik19921992"
         self.txt9   =   "QUIT"
-        self.ARCADE = self.can.create_text(250,35,fill="#ffbf00",font="Future 55 bold",text=self.txt1)
-        self.SPACE = self.can.create_text(250,83,fill="#ff190a",font="Future 50 bold",text=self.txt2)
-        self.ALIANPRICE = self.can.create_text(235+40,165+75,fill="#ff190a",font="Future 18 bold",text=self.txt3)
-        self.MISSILEPRICE = self.can.create_text(235+40,220+75,fill="#ff190a",font="Future 18 bold",text=self.txt4)
-        self.LORDALIAN = self.can.create_text(235+40,275+75,fill="#ff190a",font="Future 18 bold",text=self.txt5)
-        self.CRAFTALIAN = self.can.create_text(235+40,325+75,fill="#ff190a",font="Future 18 bold",text=self.txt6)
-        self.STARTGAME = self.can.create_text(235+20,150,fill="#ffffff",font="Future 18 bold",text=self.txt7)
-        self.GITHUB = self.can.create_text(235+20,450,fill="#33ff33",font="Future 18 bold",text=self.txt8)
-        self.QUIT = self.can.create_text(235+20,190,fill="#ffffff",font="Future 18 bold",text=self.txt9)
+        self.ARCADE = self.can.create_text(250,35,fill="#ffbf00",font="Future 55 bold",text=self.txt1,tags="ARCADE")
+        self.SPACE = self.can.create_text(250,83,fill="#ff190a",font="Future 50 bold",text=self.txt2,tags="SPACE")
+        self.ALIANPRICE = self.can.create_text(235+40,165+75,fill="#ff190a",font="Future 18 bold",text=self.txt3,tags="ALIANPRICE")
+        self.MISSILEPRICE = self.can.create_text(235+40,220+75,fill="#ff190a",font="Future 18 bold",text=self.txt4,tags="MISSILEPRICE")
+        self.LORDALIAN = self.can.create_text(235+40,275+75,fill="#ff190a",font="Future 18 bold",text=self.txt5,tags="LORDALIAN")
+        self.CRAFTALIAN = self.can.create_text(235+40,325+75,fill="#ff190a",font="Future 18 bold",text=self.txt6,tags="CRAFTALIAN")
+        self.STARTGAME = self.can.create_text(235+20,150,fill="#ffffff",font="Future 18 bold",text=self.txt7,tags="START")
+        self.GITHUB = self.can.create_text(235+20,450,fill="#00ff00",font="Future 18 bold",text=self.txt8,tags="GITHUB")
+        self.QUIT = self.can.create_text(235+20,190,fill="#ffffff",font="Future 18 bold",text=self.txt9,tags="QUIT")
+
 
     def Drawparticle(self,IMAGE,X,Y,NUM,TYPE):                                                                                                                                                                                                                                                      
         if "item" not in self.z:                                                                                                                               
@@ -1110,6 +1118,70 @@ class GAME_THEME:
         self.Drawparticle('missile6.png',190+40,185+75,1,"TARGET")
         self.Drawparticle('lordalian.png',180+40,255+75,2,"TARGET")
         self.Drawparticle('alian105.png',175+40,295+75,3,"TARGET")
+
+    def bindings(self):
+        self.can.tag_bind('START','<Enter>',self.OnCrossStart)
+        self.can.tag_bind('START','<Button-1>',self.OnClickStart)
+        self.can.tag_bind('START','<Leave>',self.OnLeaveStart)
+        self.can.tag_bind('QUIT','<Enter>',self.OnCrossQuit)
+        self.can.tag_bind('QUIT','<Button-1>',self.OnClickQuit)
+        self.can.tag_bind('QUIT','<Leave>',self.OnLeaveQuit)
+                
+    def OnCrossStart(self,event):
+        self.can.itemconfigure("START",fill="#00ff00")
+
+    def OnClickStart(self,event):
+        self.can.itemconfigure("START",fill="#00ff00")
+        self.can.itemconfigure("START",text="")
+        self.can.itemconfigure("QUIT",text="")
+
+        self.can.itemconfigure("ARCADE",text="")
+        self.can.itemconfigure("SPACE",text="")
+        self.can.itemconfigure("ALIANPRICE",text="")
+        self.can.itemconfigure("MISSILEPRICE",text="")
+        self.can.itemconfigure("LORDALIAN",text="")
+        self.can.itemconfigure("CRAFTALIAN",text="")
+        self.can.itemconfigure("GITHUB",text="")
+        self.Drawparticle('',0,0,0,"TARGET")
+        self.Drawparticle('',0,0,1,"TARGET")
+        self.Drawparticle('',0,0,2,"TARGET")
+        self.Drawparticle('',0,0,3,"TARGET")
+        self.c = main_class(fen)
+
+    def OnLeaveStart(self,enter):
+        self.can.itemconfigure("START",fill="#ffffff")
+
+    def OnCrossQuit(self,event):
+        self.can.itemconfigure("QUIT",fill="#00ff00")
+
+    def OnClickQuit(self,event):
+        fen.quit()
+
+    def OnLeaveQuit(self,enter):
+        self.can.itemconfigure("QUIT",fill="#ffffff")
+
+def SpaceStars():
+    global can                                                                                                                                     
+    colors = ["blue","red","green","white"]                                                                                                  
+    for i in range(200):                                                                                                                              
+        rand1 = random.randint(1,500)                                                                                                                 
+        rand2 = random.randint(1,500)                                                                                                                 
+        rand3 = random.uniform(0.3,1.6)                                                                                                               
+        rand4 = random.choice(colors)                                                                                                                 
+        can.create_oval(rand1-rand3,rand2-rand3,rand1+rand3,rand2+rand3,fill=rand4)
+    
+def Shape():
+    global can
+    global START
+    global QUIT
+    START = 'start'
+    QUIT = 'quit'
+    can = tkinter.Canvas(fen,width=500 ,height=500 , bg='black')
+    SpaceStars()
+    #man = can.create_text(250,250,fill="#ffffff",font="Future 18 bold",text="Start",tags=START)
+    #dan = can.create_text(250,300,fill="#ffffff",font="Future 18 bold",text="Quit",tags=QUIT)
+    #can.config(cursor='none') # hide cursor
+    can.pack()
 
 if __name__ == '__main__':                    
     fen  = tkinter.Tk()
