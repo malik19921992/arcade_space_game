@@ -1063,13 +1063,14 @@ class GAME_THEME:
         Shape()
         self.can = can
         self.z = {}
-        #self.Shape()
+        self.blink = True
+        self.quit = False
         self.TraficText()
         self.FirstFucntion()
         self.z["pos"]                   =   {}
         self.z["pos"]["SPACESHIP"]      =   {}
         self.bindings()
-        #self.z["pos"]["SPACESHIP"][0]   =   {'x': 0 ,'y': 0}
+        self.loops()
 
 
     def motion(self,event):
@@ -1126,6 +1127,9 @@ class GAME_THEME:
         self.can.tag_bind('QUIT','<Enter>',self.OnCrossQuit)
         self.can.tag_bind('QUIT','<Button-1>',self.OnClickQuit)
         self.can.tag_bind('QUIT','<Leave>',self.OnLeaveQuit)
+        self.can.tag_bind('GITHUB','<Enter>',self.OnCrossGithub)
+        self.can.tag_bind('GITHUB','<Button-1>',self.OnClickGithub)
+        self.can.tag_bind('GITHUB','<Leave>',self.OnLeaveGithub)
                 
     def OnCrossStart(self,event):
         self.can.itemconfigure("START",fill="#00ff00")
@@ -1155,11 +1159,33 @@ class GAME_THEME:
         self.can.itemconfigure("QUIT",fill="#00ff00")
 
     def OnClickQuit(self,event):
+        self.blink = False
+        self.quit = True
         fen.quit()
 
     def OnLeaveQuit(self,enter):
         self.can.itemconfigure("QUIT",fill="#ffffff")
 
+    def UpdateAfter(self,NUM=5):
+        self.can.after(NUM)
+        self.can.update()
+
+    def loops(self):
+        while self.blink == True:
+            self.can.itemconfigure("GITHUB",fill="#ffffff")
+            self.UpdateAfter(200)
+            self.can.itemconfigure("GITHUB",fill="#00ff00")
+            self.UpdateAfter(350)
+            if self.blink == False:
+                if self.quit == True:
+                    break
+        if self.blink == False:
+            if self.quit == True:
+                fen.destroy()
+                fen.quit()
+                    
+
+            
 def SpaceStars():
     global can                                                                                                                                     
     colors = ["blue","red","green","white"]                                                                                                  
@@ -1178,17 +1204,12 @@ def Shape():
     QUIT = 'quit'
     can = tkinter.Canvas(fen,width=500 ,height=500 , bg='black')
     SpaceStars()
-    #man = can.create_text(250,250,fill="#ffffff",font="Future 18 bold",text="Start",tags=START)
-    #dan = can.create_text(250,300,fill="#ffffff",font="Future 18 bold",text="Quit",tags=QUIT)
-    #can.config(cursor='none') # hide cursor
     can.pack()
 
 if __name__ == '__main__':                    
     fen  = tkinter.Tk()
     fen.resizable(0,0) # fixed size widget
     b = GAME_THEME(fen)
-    #c = main_class(fen)
     fen.mainloop()
-    #fen.destroy()
 
 
