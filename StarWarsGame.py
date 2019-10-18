@@ -12,11 +12,7 @@
 ## Status: active
 ########################################################
 '''
-to change text color and start game by just click start
-test_hover.py
-  File "./test22.py", line 1131, in OnClickStart
-    self.can.itemconfigure(self.start,fill="#00ff00")
-AttributeError: 'GAME_THEME' object has no attribute 'start'
+test_blinking.py
 '''
 import tkinter
 import re
@@ -1130,6 +1126,19 @@ class GAME_THEME:
         self.can.tag_bind('GITHUB','<Enter>',self.OnCrossGithub)
         self.can.tag_bind('GITHUB','<Button-1>',self.OnClickGithub)
         self.can.tag_bind('GITHUB','<Leave>',self.OnLeaveGithub)
+
+    def OnCrossGithub(self,event):
+        self.cross = True
+        self.start = False
+        self.leave = False
+
+    def OnClickGithub(self,event):
+        pass
+
+    def OnLeaveGithub(self,enter):
+        self.cross = False
+        self.start = False
+        self.leave = True
                 
     def OnCrossStart(self,event):
         self.can.itemconfigure("START",fill="#00ff00")
@@ -1170,22 +1179,31 @@ class GAME_THEME:
         self.can.after(NUM)
         self.can.update()
 
-    def loops(self):
-        while self.blink == True:
-            self.can.itemconfigure("GITHUB",fill="#ffffff")
-            self.UpdateAfter(200)
-            self.can.itemconfigure("GITHUB",fill="#00ff00")
-            self.UpdateAfter(350)
-            if self.blink == False:
-                if self.quit == True:
-                    break
-        if self.blink == False:
-            if self.quit == True:
-                fen.destroy()
-                fen.quit()
-                    
+    def loop(self):
+        time.sleep(1)
+        while True:
+                if self.cross == True:
+                    #stop blinking
+                    print('its cross')
+                    self.can.itemconfigure("GITHUB",fill="#ffffff")
+                    UpdateAfter(350)
+                elif self.leave == True:
+                    print('its leave')
+                    self.can.itemconfigure("GITHUB",fill="#ffffff")
+                    UpdateAfter(200)
+                    #MineUpdate()
+                    self.can.itemconfigure("GITHUB",fill="#00ff00")
+                    UpdateAfter(350)
+                    #MineUpdate()
+                elif self.start == True:
+                    print('its start')
+                    self.can.itemconfigure("GITHUB",fill="#ffffff")
+                    UpdateAfter(200)
+                    #MineUpdate()
+                    self.can.itemconfigure("GITHUB",fill="#00ff00")
+                    UpdateAfter(350)
+                    #MineUpdate()
 
-            
 def SpaceStars():
     global can                                                                                                                                     
     colors = ["blue","red","green","white"]                                                                                                  
