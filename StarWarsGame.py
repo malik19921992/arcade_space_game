@@ -21,6 +21,7 @@ import threading
 import random
 from PIL import Image, ImageTk
 import math
+import webbrowser
 
 class main_class:
 
@@ -1059,8 +1060,12 @@ class GAME_THEME:
         Shape()
         self.can = can
         self.z = {}
+        self.cross = False
+        self.start = True
+        self.leave = False
         self.blink = True
         self.quit = False
+        self.loop = True
         self.TraficText()
         self.FirstFucntion()
         self.z["pos"]                   =   {}
@@ -1133,13 +1138,15 @@ class GAME_THEME:
         self.leave = False
 
     def OnClickGithub(self,event):
-        pass
+        print('open site')
+        url = "https://github.com/malik19921992"
+        webbrowser.get('firefox').open_new_tab(url)
 
     def OnLeaveGithub(self,enter):
         self.cross = False
         self.start = False
         self.leave = True
-                
+
     def OnCrossStart(self,event):
         self.can.itemconfigure("START",fill="#00ff00")
 
@@ -1168,9 +1175,13 @@ class GAME_THEME:
         self.can.itemconfigure("QUIT",fill="#00ff00")
 
     def OnClickQuit(self,event):
+        self.loop = False
         self.blink = False
         self.quit = True
+        self.can.quit()
+        self.can.destroy()
         fen.quit()
+        fen.destroy()
 
     def OnLeaveQuit(self,enter):
         self.can.itemconfigure("QUIT",fill="#ffffff")
@@ -1179,30 +1190,22 @@ class GAME_THEME:
         self.can.after(NUM)
         self.can.update()
 
-    def loop(self):
+    def loops(self):
         time.sleep(1)
-        while True:
+        while self.loop == True:
                 if self.cross == True:
-                    #stop blinking
-                    print('its cross')
                     self.can.itemconfigure("GITHUB",fill="#ffffff")
-                    UpdateAfter(350)
+                    self.UpdateAfter()
                 elif self.leave == True:
-                    print('its leave')
                     self.can.itemconfigure("GITHUB",fill="#ffffff")
-                    UpdateAfter(200)
-                    #MineUpdate()
+                    self.UpdateAfter(350)
                     self.can.itemconfigure("GITHUB",fill="#00ff00")
-                    UpdateAfter(350)
-                    #MineUpdate()
+                    self.UpdateAfter(350)
                 elif self.start == True:
-                    print('its start')
                     self.can.itemconfigure("GITHUB",fill="#ffffff")
-                    UpdateAfter(200)
-                    #MineUpdate()
+                    self.UpdateAfter(350)
                     self.can.itemconfigure("GITHUB",fill="#00ff00")
-                    UpdateAfter(350)
-                    #MineUpdate()
+                    self.UpdateAfter(350)
 
 def SpaceStars():
     global can                                                                                                                                     
